@@ -4,6 +4,7 @@ user = []
 user_guess = []
 computer = []
 
+
 def produce_board(board):
     """
     Produce the playing board of 8 "O" in 8 lists
@@ -20,8 +21,8 @@ def print_board(board):
     Prints the lists containing the O, removes formatting and adds spaces
     Argument: a list
     """
-    for ind in board
-    print(" ".join(ind))
+    for ind in board:
+        print(" ".join(ind))
 
 
 def random_number(board):
@@ -31,3 +32,23 @@ def random_number(board):
     Argument: a list
     """
     return randint(0, len(board)-1)
+
+
+def generate_ship_postition(board):
+    """
+    Generates 10 ships and places them in random locations.
+    It will place letter X for the ship and the loop will run
+    and check ships are not placed in the same position.
+    Argument: a list
+    """
+    ship_number = 0
+    while ship_number < 10:
+        ship_number = 0
+        ship_col = random_number(board)
+        ship_row = random_number(board)
+        board[ship_row][ship_col] = " X "
+        for row in board:
+            ship_number += row.count(" X ")
+
+
+
