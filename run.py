@@ -34,7 +34,7 @@ def random_number(board):
     return randint(0, len(board)-1)
 
 
-def generate_ship_postition(board):
+def generate_ship_position(board):
     """
     Generates 10 ships and places them in random locations.
     It will place letter X for the ship and the loop will run
@@ -53,11 +53,168 @@ def generate_ship_postition(board):
 
 def message():
     """
-    Message to user at start of game.
+    Welcome message to the game.
     """
-    print("Welcome to Battleships, Good Luck")
-    username = input("Choose a username and type it in then press enter: \n")
-    print(f'\nHi {username}! Your ships will now be placed!'
-        'You will have 10 ships to find on the hidden board.')
-    print('\nO are open spaces, * are shots that have missed and # are hits.'
-        'The game are is 8 x 8 so intergers between 1 and 8')
+    print("Ready to play Battleships! Good Luck")
+    username = input("Choose a username and hit enter: \n")
+    print(f'\nHi {username}! Your battleships will be placed randomly for you.'
+          'You will have to find 10 ships on the hidden board to win.')
+    print('\nO are unselected positions, * are misses and # hits'
+          'The board is 8 x 8 so use intergers between 1 and 8.')
+
+
+def generate_boards():
+    """
+    Creates boards for the game. A user board for attempts,
+    a user board for following computers attempts and a
+    hidden board for computers ships.
+    """
+    produce_board(user)
+    produce_board(computer)
+    produce_board(user_guess)
+    generate_ship_position(user)
+    generate_ship_position(computer)
+
+
+def user_turn():
+    """
+    Get user input on battleship guess, check whether it is valid data,
+    check whether that shot has already been taken, check whether they hit a
+    battleship and show them the result of their turn.
+    """
+    print("Make your mark:")
+    print_board(user_guess)
+    repeat = True
+    while repeat:
+        # check whether data is valid
+        while True:
+            print("\nChoose a column")
+            guess_col = input("Enter a number and press enter: \n")
+            if validate_data(guess_col):
+                break
+        while True:
+            print("\nChoose a row")
+            guess_row = input("Enter a number and press enter: \n")
+            if validate_data(guess_row):
+                break
+
+        # minus 1 as the users enter numbers between 1 and 8
+        guess_col = int(guess_col)-1
+        guess_row = int(guess_row)-1
+
+        # check if we've already chosen that spot
+        if (user_guess[guess_row][guess_col] == " * " or
+                user_guess[guess_row][guess_col] == " # "):
+            print("You've already picked that posisition, try again!")
+        else:
+            repeat = False
+    # Check whether that spot is a hit or not and display result
+    if computer[guess_row][guess_col] == " o ":
+        user_guess[guess_row][guess_col] = " # "
+        print("\nHIT!")
+    else:
+        user_guess[guess_row][guess_col] = " * "
+        print("\nMISS!")
+
+
+def computer_guess():
+    """
+    Computer guess.
+    """
+    print("\n\nOpponents turn!")
+    repeat = True
+    # Generate first random numbers
+    guess_col = random_number(computer)
+    guess_row = random_number(computer)
+    # Check if we've already chosen that spot
+    while repeat:
+        if (user[guess_row][guess_col] == " * " or
+                user[guess_row][guess_col] == " # "):
+            guess_col = random_number(computer)
+            guess_row = random_number(computer)
+        else:
+            repeat = False
+    # Display to the user what the computer chose and result
+    print(f"Opponent chose {guess_col + 1}, {guess_row + 1}")
+    if user[guess_row][guess_col] == " o ":
+        user[guess_row][guess_col] = " # "
+        print("HIT! :(")
+    else:
+        user[guess_row][guess_col] = " * "
+        print("MISS!")
+
+
+def game_play():
+    """
+    Main loop for playing the game. First generate the boards and display the
+    welcome message. Then, there's a while loop so that we can take a maximum
+    of then turns. In the while loop, we display with turn it is, then run the
+    user guess, print and computer guess functions. Then each turn, we check
+    whether there is a winner, if there is, we exit the loop and run the final
+    winning check and message function. If after all the turns, there is no
+    winner, we still run the final winning check function.
+    """
+    generate_boards()
+    message()
+    i = 0
+    while i < 20:
+        print(f"\nThis is turn {i +1}/20 \n")
+        user_turn()
+        print_board(user_guess)
+        input("\nPress Enter to continue...")
+        computer_guess()
+        print("\nHere's your board: ")
+        print_board(user)
+        input("\nPress Enter to continue...")
+        i += 1
+        if check_winner(user) == 10:
+            i = 20
+        elif check_winner(user_guess) == 10:
+            i = 20
+    check_winner_final()
+
+
+def validate_data(value):
+    """
+    If values is not between 1 and 5, raise an error and request a new input
+    Argument: user input value
+    """
+    try:
+        if int(value) > 8 or int(value) < 1:
+            raise ValueError(
+                "Your shot is out of bounds! Choose a number between 1 and 5"
+            )
+    except ValueError as e:
+        print(f"Invalid data: {e}, please try again.")
+        print("Please enter an integer between 1 and 8")
+        return False
+    return True
+
+
+def check_winner(board):
+    """
+    Sums the number of times " # " (hit battleships) appear in the board.
+    Argument: a list, expected to be the player board
+    """
+    total = 0
+    for list in board:
+        total += list.count(" # ")
+    return total
+
+
+def check_winner_final():
+    """
+    Check for a winner after ten turns and report the result to the user
+    """
+    user_result = check_winner(user_guess)
+    comp_result = check_winner(user)
+    if user_result > comp_result:
+        print("Congratulations! You WIN!")
+    elif user_result < comp_result:
+        print("You lost!")
+    else:
+        print("It was a draw!")
+
+
+# Call the main function
+game_play()
