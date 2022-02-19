@@ -78,9 +78,8 @@ def generate_boards():
 
 def user_turn():
     """
-    Get user input on battleship guess, check whether it is valid data,
-    check whether that shot has already been taken, check whether they hit a
-    battleship and show them the result of their turn.
+    Get input from user, check if position is valid,
+    check whether they hit a ship and show the the result.
     """
     print("Make your mark:")
     print_board(user_guess)
@@ -102,10 +101,10 @@ def user_turn():
         guess_col = int(guess_col)-1
         guess_row = int(guess_row)-1
 
-        # check if we've already chosen that spot
+        # check if we've already chosen that position
         if (user_guess[guess_row][guess_col] == " * " or
                 user_guess[guess_row][guess_col] == " # "):
-            print("You've already picked that posisition, try again!")
+            print("You've already picked that position, try again!")
         else:
             repeat = False
     # Check whether that spot is a hit or not and display result
@@ -146,26 +145,21 @@ def computer_guess():
 
 def game_play():
     """
-    Main loop for playing the game. First generate the boards and display the
-    welcome message. Then, there's a while loop so that we can take a maximum
-    of then turns. In the while loop, we display with turn it is, then run the
-    user guess, print and computer guess functions. Then each turn, we check
-    whether there is a winner, if there is, we exit the loop and run the final
-    winning check and message function. If after all the turns, there is no
-    winner, we still run the final winning check function.
+    Main loop for playing the game. Boards are generated and display message.
+    Whileloops will check for hit or miss and display appropriate message.
     """
     generate_boards()
     message()
     i = 0
     while i < 20:
-        print(f"\nThis is turn {i +1}/20 \n")
+        print(f"\nTurns used {i +1}/20 \n")
         user_turn()
         print_board(user_guess)
-        input("\nPress Enter to continue...")
+        input("\nPress Enter for next step...")
         computer_guess()
-        print("\nHere's your board: ")
+        print("\nUser board: ")
         print_board(user)
-        input("\nPress Enter to continue...")
+        input("\nPress Enter for next step...")
         i += 1
         if check_winner(user) == 10:
             i = 20
@@ -176,13 +170,13 @@ def game_play():
 
 def validate_data(value):
     """
-    If values is not between 1 and 5, raise an error and request a new input
+    If value is not between 1 and 8, display error and request user to go again
     Argument: user input value
     """
     try:
         if int(value) > 8 or int(value) < 1:
             raise ValueError(
-                "Your shot is out of bounds! Choose a number between 1 and 5"
+                "Your shot is off the board! Choose a number between 1 and 8"
             )
     except ValueError as e:
         print(f"Invalid data: {e}, please try again.")
@@ -194,7 +188,7 @@ def validate_data(value):
 def check_winner(board):
     """
     Sums the number of times " # " (hit battleships) appear in the board.
-    Argument: a list, expected to be the player board
+    Argument: a list
     """
     total = 0
     for list in board:
@@ -204,7 +198,7 @@ def check_winner(board):
 
 def check_winner_final():
     """
-    Check for a winner after ten turns and report the result to the user
+    Check for a winner after 20 turns and report the result
     """
     user_result = check_winner(user_guess)
     comp_result = check_winner(user)
