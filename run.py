@@ -51,4 +51,13 @@ def generate_ship_postition(board):
             ship_number += row.count(" X ")
 
 
-
+def message():
+    """
+    Message to user at start of game.
+    """
+    print("Welcome to Battleships, Good Luck")
+    username = input("Choose a username and type it in then press enter: \n")
+    print(f'\nHi {username}! Your ships will now be placed!'
+        'You will have 10 ships to find on the hidden board.')
+    print('\nO are open spaces, * are shots that have missed and # are hits.'
+        'The game are is 8 x 8 so intergers between 1 and 8')
